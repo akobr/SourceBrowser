@@ -260,7 +260,7 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
                 }
 
                 IndexSolutions(projects, excludedProjects, properties, federation, serverPathMappings, pluginBlacklist);
-                FinalizeProjects(emitAssemblyList, federation);
+                FinalizeProjects(emitAssemblyList, excludedProjects, federation);
                 WebsiteFinalizer.Finalize(websiteDestination, emitAssemblyList, federation);
             }
         }
@@ -338,6 +338,7 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
                     foreach (var assemblyName in AssemblyNameExtractor.GetAssemblyNames(path, excludedProjects))
                     {
                         assemblyNames.Add(assemblyName);
+                        Log.Write("Assembly to process: " + assemblyName, ConsoleColor.Gray);
                     }
                 }
             }
@@ -373,7 +374,7 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
             }
         }
 
-        private static void FinalizeProjects(bool emitAssemblyList, Federation federation)
+        private static void FinalizeProjects(bool emitAssemblyList, ISet<string> excludedProjects, Federation federation)
         {
             GenerateLooseFilesProject(Constants.MSBuildFiles, Paths.SolutionDestinationFolder);
             GenerateLooseFilesProject(Constants.TypeScriptFiles, Paths.SolutionDestinationFolder);
@@ -382,7 +383,7 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
                 try
                 {
                     var solutionFinalizer = new SolutionFinalizer(Paths.SolutionDestinationFolder);
-                    solutionFinalizer.FinalizeProjects(emitAssemblyList, federation, mergedSolutionExplorerRoot);
+                    solutionFinalizer.FinalizeProjects(emitAssemblyList, excludedProjects, federation, mergedSolutionExplorerRoot);
                 }
                 catch (Exception ex)
                 {

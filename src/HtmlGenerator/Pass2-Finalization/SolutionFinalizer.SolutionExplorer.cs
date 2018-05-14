@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.CodeAnalysis;
 using Microsoft.SourceBrowser.Common;
@@ -8,7 +9,7 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
 {
     public partial class SolutionFinalizer
     {
-        private void WriteSolutionExplorer(Folder root = null)
+        private void WriteSolutionExplorer(ISet<string> excludedProjects, Folder root = null)
         {
             if (root == null)
             {
@@ -21,7 +22,7 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
             {
                 Log.Write("Solution Explorer...");
                 Markup.WriteSolutionExplorerPrefix(writer);
-                WriteFolder(root, writer);
+                WriteFolder(root, writer, excludedProjects);
                 Markup.WriteSolutionExplorerSuffix(writer);
             }
         }
@@ -43,14 +44,14 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
             }
         }
 
-        private void WriteFolder(Folder folder, StreamWriter writer)
+        private void WriteFolder(Folder folder, StreamWriter writer, ISet<string> excludedProjects)
         {
             if (folder.Folders != null)
             {
                 foreach (var subfolder in folder.Folders.Values)
                 {
                     writer.WriteLine(@"<div class=""folderTitle"">{0}</div><div class=""folder"">", subfolder.Name);
-                    WriteFolder(subfolder, writer);
+                    WriteFolder(subfolder, writer, excludedProjects);
                     writer.WriteLine("</div>");
                 }
             }
@@ -59,6 +60,12 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
             {
                 foreach (var project in folder.Items)
                 {
+                    string projectName = Path.GetFileName(project.FilePath ?? "null");
+                    if (excludedProjects.Contains(projectName))
+                    {
+                        continue;
+                    }
+
                     WriteProject(project.AssemblyName, writer);
                 }
             }

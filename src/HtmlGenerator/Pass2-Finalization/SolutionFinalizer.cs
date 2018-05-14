@@ -89,10 +89,10 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
             }
         }
 
-        public void FinalizeProjects(bool emitAssemblyList, Federation federation, Folder<Project> solutionExplorerRoot = null)
+        public void FinalizeProjects(bool emitAssemblyList, ISet<string> excludedProjects, Federation federation, Folder<Project> solutionExplorerRoot = null)
         {
             SortProcessedAssemblies();
-            WriteSolutionExplorer(solutionExplorerRoot);
+            WriteSolutionExplorer(excludedProjects, solutionExplorerRoot);
             CreateReferencesFiles();
             CreateMasterDeclarationsIndex();
             CreateProjectMap();
