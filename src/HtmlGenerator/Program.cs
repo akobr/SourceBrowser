@@ -23,6 +23,7 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
             }
 
             var projects = new List<string>();
+            ISet<string> excludedProjects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var properties = new Dictionary<string, string>();
             var emitAssemblyList = false;
             var force = false;
@@ -83,6 +84,30 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
                     continue;
                 }
 
+                if (arg.StartsWith("/exclude:"))
+                {
+                    string inputPath = arg.Substring("/exclude:".Length).StripQuotes();
+                    try
+                    {
+                        if (!File.Exists(inputPath))
+                        {
+                            continue;
+                        }
+
+                        string[] projectsNames = File.ReadAllLines(inputPath);
+                        foreach (string projectName in projectsNames)
+                        {
+                            AddExcludedProject(excludedProjects, projectName);
+                        }
+                    }
+                    catch
+                    {
+                        Log.Write("Invalid argument: " + arg, ConsoleColor.Red);
+                    }
+
+                    continue;
+                }
+
                 if (arg.StartsWith("/p:"))
                 {
                     var match = Regex.Match(arg, "/p:(?<name>[^=]+)=(?<value>.+)");
@@ -127,6 +152,42 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
                         Log.Message($"Adding federation '{server}' (offline from '{assemblyListFileName}').");
                         continue;
                     }
+                    continue;
+                }
+
+                if (arg.StartsWith("/fedlist:"))
+                {
+                    string inputPath = arg.Substring("/fedlist:".Length).StripQuotes();
+                    try
+                    {
+                        if (!File.Exists(inputPath))
+                        {
+                            continue;
+                        }
+
+                        string[] fedList = File.ReadAllLines(inputPath);
+                        foreach (string federation in fedList)
+                        {
+                            var match = Regex.Match(arg, "offline:(?<server>[^=]+)=(?<file>.+)");
+                            if (match.Success)
+                            {
+                                var server = match.Groups["server"].Value;
+                                var assemblyListFileName = match.Groups["file"].Value;
+                                offlineFederations[server] = assemblyListFileName;
+                                Log.Message($"Adding federation '{server}' (offline from '{assemblyListFileName}').");
+                            }
+                            else
+                            {
+                                Log.Message($"Adding federation '{federation}'.");
+                                federations.Add(federation);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        Log.Write("Invalid argument: " + arg, ConsoleColor.Red);
+                    }
+
                     continue;
                 }
 
@@ -186,11 +247,6 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
             {
                 var federation = new Federation();
 
-                if (!noBuiltInFederations)
-                {
-                    federation.AddFederations(Federation.DefaultFederatedIndexUrls);
-                }
-
                 federation.AddFederations(federations);
 
                 foreach (var entry in offlineFederations)
@@ -198,7 +254,12 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
                     federation.AddFederation(entry.Key, entry.Value);
                 }
 
-                IndexSolutions(projects, properties, federation, serverPathMappings, pluginBlacklist);
+                if (!noBuiltInFederations)
+                {
+                    federation.AddFederations(Federation.DefaultFederatedIndexUrls);
+                }
+
+                IndexSolutions(projects, excludedProjects, properties, federation, serverPathMappings, pluginBlacklist);
                 FinalizeProjects(emitAssemblyList, federation);
                 WebsiteFinalizer.Finalize(websiteDestination, emitAssemblyList, federation);
             }
@@ -229,6 +290,17 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
                    filePath.EndsWith(".vbproj", StringComparison.OrdinalIgnoreCase);
         }
 
+        private static void AddExcludedProject(ISet<string> excludedProjects, string projectName)
+        {
+            excludedProjects.Add(projectName);
+        }
+
+        private static bool IsExludedProject(ISet<string> excludedProjects, string projectPath)
+        {
+            string projectName = Path.GetFileName(projectPath);
+            return excludedProjects.Contains(projectName);
+        }
+
         private static void PrintUsage()
         {
             Console.WriteLine(@"Usage: HtmlGenerator "
@@ -237,15 +309,19 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
                 + @"[/noplugins] "
                 + @"[/noplugin:Git] "
                 + @"<pathtosolution1.csproj|vbproj|sln> [more solutions/projects..] "
-                + @"[/in:<filecontaingprojectlist>] "
+                + @"[/in:<file>] "
+                + @"[/exclude:<file>] "
                 + @"[/nobuiltinfederations] "
                 + @"[/offlinefederation:server=assemblyListFile] "
-                + @"[/assemblylist]");
+                + @"[/assemblylist] "
+                + @"[/federation:<serverUrl>] "
+                + @"[/offlinefederation:<serverUrl>=<offlineFilePath>] "
+                + @"[/fedlist:<file>]");
         }
 
         private static readonly Folder<Project> mergedSolutionExplorerRoot = new Folder<Project>();
 
-        private static void IndexSolutions(IEnumerable<string> solutionFilePaths, Dictionary<string, string> properties, Federation federation, Dictionary<string, string> serverPathMappings, IEnumerable<string> pluginBlacklist)
+        private static void IndexSolutions(IEnumerable<string> solutionFilePaths, ISet<string> excludedProjects, Dictionary<string, string> properties, Federation federation, Dictionary<string, string> serverPathMappings, IEnumerable<string> pluginBlacklist)
         {
             var assemblyNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -253,7 +329,13 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
             {
                 using (Disposable.Timing("Reading assembly names from " + path))
                 {
-                    foreach (var assemblyName in AssemblyNameExtractor.GetAssemblyNames(path))
+                    if(IsExludedProject(excludedProjects, path))
+                    {
+                        Log.Write("The project/solution is excluded: " + path, ConsoleColor.Yellow);
+                        continue;
+                    }
+
+                    foreach (var assemblyName in AssemblyNameExtractor.GetAssemblyNames(path, excludedProjects))
                     {
                         assemblyNames.Add(assemblyName);
                     }
@@ -266,6 +348,12 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
             {
                 using (Disposable.Timing("Generating " + path))
                 {
+                    if (IsExludedProject(excludedProjects, path))
+                    {
+                        Log.Write("The project/solution is excluded: " + path, ConsoleColor.Yellow);
+                        continue;
+                    }
+
                     using (var solutionGenerator = new SolutionGenerator(
                         path,
                         Paths.SolutionDestinationFolder,
