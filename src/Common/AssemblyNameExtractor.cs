@@ -15,7 +15,7 @@ namespace Microsoft.SourceBrowser.Common
         private static readonly Regex assemblyNameRegex = new Regex(@"<(?:Module)?AssemblyName>((\w|\.|\$|\(|\)|-)+)</(?:Module)?AssemblyName>", RegexOptions.Compiled);
         private static readonly Regex rootNamespaceRegex = new Regex(@"<RootNamespace>((\w|\.)+)</RootNamespace>", RegexOptions.Compiled);
 
-        public static IEnumerable<string> GetAssemblyNames(string projectOrSolutionFilePath)
+        public static IEnumerable<string> GetAssemblyNames(string projectOrSolutionFilePath, ISet<string> excludedProjects)
         {
             if (!File.Exists(projectOrSolutionFilePath))
             {
@@ -24,7 +24,7 @@ namespace Microsoft.SourceBrowser.Common
 
             if (projectOrSolutionFilePath.EndsWith(".sln"))
             {
-                return GetAssemblyNamesFromSolution(projectOrSolutionFilePath);
+                return GetAssemblyNamesFromSolution(projectOrSolutionFilePath, excludedProjects);
             }
             else
             {
@@ -96,7 +96,7 @@ namespace Microsoft.SourceBrowser.Common
             return projectFileName;
         }
 
-        public static IEnumerable<string> GetAssemblyNamesFromSolution(string solutionFilePath)
+        public static IEnumerable<string> GetAssemblyNamesFromSolution(string solutionFilePath, ISet<string> excludedProjects)
         {
             var solution = SolutionFile.Parse(solutionFilePath);
             var assemblies = new List<string>(solution.ProjectsInOrder.Count);
@@ -104,6 +104,13 @@ namespace Microsoft.SourceBrowser.Common
             {
                 if (project.ProjectType == SolutionProjectType.SolutionFolder)
                 {
+                    continue;
+                }
+
+                string projectName = Path.GetFileName(project.AbsolutePath);
+                if (excludedProjects.Contains(projectName))
+                {
+                    Log.Write("The project is excluded: " + projectName, System.ConsoleColor.Yellow);
                     continue;
                 }
 
