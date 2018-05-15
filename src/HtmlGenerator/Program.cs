@@ -1,4 +1,20 @@
-﻿using System;
+﻿/*
+    Copyright 2017 Ales Kobr
+
+    Copyright 2015 Kirill Osenkov, Vladimir Matveev
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+
+    This file has been modified by Ales Kobr to add support for 
+    additional input arguments and excluded projects.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
