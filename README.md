@@ -1,13 +1,27 @@
 # SourceBrowser
+
+> Fork based on [KirillOsenkov/SourceBrowser](https://github.com/KirillOsenkov/SourceBrowser), we are extending and bending *SourceBrowser* to satisfied our needs and to support our specific Solution structures.
+
 Source browser website generator that powers https://referencesource.microsoft.com, http://source.roslyn.io, https://source.dot.net, and https://aspnetsource.azurewebsites.net/ (unofficial ASP.NET Core 1.0 source).
 
 Create and host your own static HTML website to browse your C#/VB/MSBuild/TypeScript source code. **Note** that it does require an ASP.NET Core website for hosting (symbol index is kept server-side), so [without ASP.NET Core the search function doesn't work](https://github.com/KirillOsenkov/SourceBrowser/wiki/Architecture#server-side).
 
-Of course Source Browser allows you to browse its own source code:
-[http://sourcebrowser.azurewebsites.net](http://sourcebrowser.azurewebsites.net)
+## Tool arguments (extended)
 
-Now also available on NuGet:
-[https://www.nuget.org/packages/Microsoft.SourceBrowser](https://www.nuget.org/packages/Microsoft.SourceBrowser)
+* **/out:[outputDirectoryPath]** - Path to output directory, where the static HTML sides will be created, even with ASP&#46;NET core website files. By default *Index* folder in current working directory will be used.
+* **/in:[filePath]** - Text file as a list of input file paths to solutions/projects to generate from. One path per line.
+* **/exclude:[filePath]** - Text file as a list of excluded solutions/projects which will be skipped during generation. Project file names with extension. One project file name per line.
+* **/federation:[serverUrl]** - Specify URL to a new federation server.
+* **/offlinefederation:[serverUrl]=[offlineAssemblyListFilePath]** - Specify a new federation server as a offline assembly list.
+* **/fedlist:[filePath]** - Text file as a list of federation servers. Supported are *URLs* and offline definitions in format: *offline:[serverUrl]=[offlineAssemblyListFilePath]*. One *URL* or *offline* definition per line.
+* **/p:[name]=[value]** - Set a property for *MsBuildWorkspace*.
+* **/plist:[filePath]** - Text file as a list of properties for *MsBuildWorkspace*. One property per line in format: *[propertyName]=[propertyValue]*. ***Not implemented yet.***
+* **/force** - Override a content of output directory without asking.
+* **/noplugins** - Disable all MEF plugins.
+* **/noplugin:[pluginName]** - Disable a specific plugin.
+* **/nobuiltinfederations** - Disable built in federation servers.
+* **/assemblylist** - Trigger generation of assembly list to initial left panel.
+* **Any extra argument** - will be processed as a input solution/project to generate from. Format: *[pathToSolution.csproj|vbproj|sln] [more solutions/projects..]*.
 
 ## Instructions (requires Visual Studio 2017):
  1. git clone https://github.com/KirillOsenkov/SourceBrowser.git
@@ -57,6 +71,4 @@ The generator is not incremental. You have to generate into an empty folder from
 
 ## Project status and contributions
 
-This is a reference implementation that showcases the concepts and Roslyn usage. It comes with no guarantees, use at your own risk. We will consider accepting high-quality pull requests that add non-trivial value, however we have no plans to do significant work on the application in its current form. Any significant rearchitecture, adding large features, big refactorings won't be accepted because of resource constraints. Feel free to use it to generate websites for your own code, integrate in your CI servers etc. Feel free to do whatever you want in your own forks. Bug reports are gratefully accepted.
-
-For any questions, feel free to reach out to [@KirillOsenkov](https://twitter.com/KirillOsenkov) on Twitter. Thanks to [@v2_matveev](https://twitter.com/v2_matveev) for contributing TypeScript support!
+Fork based on [KirillOsenkov/SourceBrowser](https://github.com/KirillOsenkov/SourceBrowser), we are extending and bending *SourceBrowser* to satisfied our needs and to support our specific Solution structures.
