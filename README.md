@@ -12,8 +12,8 @@ Create and host your own static HTML website to browse your C#/VB/MSBuild/TypeSc
 * Support for federation server list.
 * The server indexing core part has been extracted to separated project for external use.
 * Two new NuGet packages
-  * Microsoft.SourceBrowser.Common
-  * Microsoft.SourceBrowser.SourceIndexServer.Core
+  * Enhanced.SourceBrowser.Common
+  * Enhanced.SourceBrowser.SourceIndexServer.Core
 
 ## Tool arguments (extended)
 

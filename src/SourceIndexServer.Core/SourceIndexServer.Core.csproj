@@ -4,10 +4,13 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <RootNamespace>Microsoft.SourceBrowser.SourceIndexServer</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>Microsoft.SourceBrowser.SourceIndexServer.Core</PackageId>
-    <Authors>Microsoft.SourceBrowser.SourceIndexServer.Core</Authors>
-    <Product>Microsoft.SourceBrowser.SourceIndexServer.Core</Product>
+    <PackageId>Enhanced.SourceBrowser.SourceIndexServer.Core</PackageId>
+    <Authors>Microsoft, KirillOsenkov, Ales Kobr</Authors>
+    <Product>The core components of SourceBrowser search service.</Product>
     <Description>The core components of SourceBrowser search service.</Description>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/akobr/SourceBrowser</PackageProjectUrl>
+    <Company />
   </PropertyGroup>
 
   <ItemGroup>

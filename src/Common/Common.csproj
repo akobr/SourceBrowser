@@ -3,6 +3,14 @@
     <AssemblyName>Microsoft.SourceBrowser.Common</AssemblyName>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Enhanced.SourceBrowser.Common</PackageId>
+    <Authors>Microsoft, KirillOsenkov, Ales Kobr</Authors>
+    <Product>Common part of enhanced SourceBrowser.</Product>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/akobr/SourceBrowser</PackageProjectUrl>
+    <PackageTags>Roslyn Source Browser</PackageTags>
+    <Description>Common part of enhanced SourceBrowser.</Description>
+    <Company />
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>$(DefineConstants);NET461</DefineConstants>
