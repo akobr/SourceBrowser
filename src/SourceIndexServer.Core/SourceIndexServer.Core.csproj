@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <RootNamespace>Microsoft.SourceBrowser.SourceIndexServer</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Microsoft.SourceBrowser.SourceIndexServer.Core</PackageId>
+    <Authors>Microsoft.SourceBrowser.SourceIndexServer.Core</Authors>
+    <Product>Microsoft.SourceBrowser.SourceIndexServer.Core</Product>
+    <Description>The core components of SourceBrowser search service.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+</Project>

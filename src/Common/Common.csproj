@@ -2,6 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Microsoft.SourceBrowser.Common</AssemblyName>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>$(DefineConstants);NET461</DefineConstants>
