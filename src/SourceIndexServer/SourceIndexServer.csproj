@@ -11,13 +11,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\SourceIndexServer.Core\SourceIndexServer.Core.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
     <!-- workaround for https://github.com/KirillOsenkov/SourceBrowser/issues/93 -->
     <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
     <PreserveCompilationContext>false</PreserveCompilationContext>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>SourceBrowser server search service.</Description>
   </PropertyGroup>
 
 </Project>
