@@ -184,7 +184,7 @@ namespace Microsoft.SourceBrowser.HtmlGenerator
                         string[] fedList = File.ReadAllLines(inputPath);
                         foreach (string federation in fedList)
                         {
-                            var match = Regex.Match(arg, "offline:(?<server>[^=]+)=(?<file>.+)");
+                            var match = Regex.Match(federation, "offline:(?<server>[^=]+)=(?<file>.+)");
                             if (match.Success)
                             {
                                 var server = match.Groups["server"].Value;
