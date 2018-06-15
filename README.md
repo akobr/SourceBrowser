@@ -6,6 +6,15 @@ Source browser website generator that powers https://referencesource.microsoft.c
 
 Create and host your own static HTML website to browse your C#/VB/MSBuild/TypeScript source code. **Note** that it does require an ASP.NET Core website for hosting (symbol index is kept server-side), so [without ASP.NET Core the search function doesn't work](https://github.com/KirillOsenkov/SourceBrowser/wiki/Architecture#server-side).
 
+## Main changes
+
+* Support for excluded projects. Can be defined as list.
+* Support for federation server list.
+* The server indexing core part has been extracted to separated project for external use.
+* Two new NuGet packages
+  * Microsoft.SourceBrowser.Common
+  * Microsoft.SourceBrowser.SourceIndexServer.Core
+
 ## Tool arguments (extended)
 
 * **/out:[outputDirectoryPath]** - Path to output directory, where the static HTML sides will be created, even with ASP&#46;NET core website files. By default *Index* folder in current working directory will be used.
